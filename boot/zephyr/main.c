@@ -237,7 +237,7 @@ static void do_boot(struct boot_rsp *rsp)
     __set_MSP(vt->msp);
 #endif
 
-#endif #if CONFIG_MCUBOOT_CLEANUP_ARM_CORE
+#if CONFIG_MCUBOOT_CLEANUP_ARM_CORE
     __set_CONTROL(0x00); /* application will configures core on its own */
     __ISB();
 #endif
