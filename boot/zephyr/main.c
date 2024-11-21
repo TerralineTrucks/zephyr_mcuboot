@@ -231,8 +231,13 @@ static void do_boot(struct boot_rsp *rsp)
 #endif
 #endif /* CONFIG_BOOT_INTR_VEC_RELOC */
 
+#ifdef CONFIG_CPU_CORTEX_R52
+    __set_SP(vt->msp);
+#else
     __set_MSP(vt->msp);
-#if CONFIG_MCUBOOT_CLEANUP_ARM_CORE
+#endif
+
+#endif #if CONFIG_MCUBOOT_CLEANUP_ARM_CORE
     __set_CONTROL(0x00); /* application will configures core on its own */
     __ISB();
 #endif
