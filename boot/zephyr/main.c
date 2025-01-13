@@ -247,7 +247,7 @@ static void do_boot(struct boot_rsp *rsp) {
 #endif
 #ifdef CONFIG_CPU_CORTEX_R52
   // Switch to SVC mode so the startup code works like it was from interrupt
-  __ASM volatile("cps #19" : : : "memory");
+  arm_core_mpu_disable();
   // The vector table gets offset by 0x200 in the zephyr build
   // Simply execute the reset vector (first entry) to take the jump to _start
   ((void (*)(void))vt)();
