@@ -155,7 +155,13 @@ static void do_boot(struct boot_rsp *rsp)
      */
 #ifdef CONFIG_BOOT_RAM_LOAD
     /* Get ram address for image */
-    vt = (struct arm_vector_table *)(rsp->br_hdr->ih_load_addr + rsp->br_hdr->ih_hdr_size);
+    vt = (struct arm_vector_table *)(rsp->br_hdr->ih_load_addr +
+#ifdef CONFIG_CPU_CORTEX_R52
+        0x200
+#else
+        rsp->br_hdr->ih_hdr_size
+#endif
+    );
 #else
     int rc;
     const struct flash_area *fap;
@@ -231,12 +237,22 @@ static void do_boot(struct boot_rsp *rsp)
 #endif
 #endif /* CONFIG_BOOT_INTR_VEC_RELOC */
 
+#if defined (CONFIG_CPU_CORTEX_M)
     __set_MSP(vt->msp);
+#endif
+
 #if CONFIG_MCUBOOT_CLEANUP_ARM_CORE
     __set_CONTROL(0x00); /* application will configures core on its own */
     __ISB();
 #endif
+
+#ifdef CONFIG_CPU_CORTEX_R52
+    // The vector table gets offset by 0x200 in the zephyr build.
+    // Simply execute the reset vector (first entry) to take the jump to _start.
+    ((void (*)(void))vt)();
+#else
     ((void (*)(void))vt->reset)();
+#endif
 }
 
 #elif defined(CONFIG_XTENSA) || defined(CONFIG_RISCV)
