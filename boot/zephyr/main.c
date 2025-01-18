@@ -204,10 +204,6 @@ static void do_boot(struct boot_rsp *rsp)
     sys_cache_data_disable();
 #endif
 
-#if CONFIG_CPU_HAS_ARM_MPU || CONFIG_CPU_HAS_NXP_MPU
-    z_arm_clear_arm_mpu_config();
-#endif
-
 #if defined(CONFIG_BUILTIN_STACK_GUARD) && \
     defined(CONFIG_CPU_CORTEX_M_HAS_SPLIM)
     /* Reset limit registers to avoid inflicting stack overflow on image
@@ -220,6 +216,12 @@ static void do_boot(struct boot_rsp *rsp)
 #else
     irq_lock();
 #endif /* CONFIG_MCUBOOT_CLEANUP_ARM_CORE */
+
+#if CONFIG_MCUBOOT_CLEANUP_ARM_CORE || CONFIG_CPU_CORTEX_R52
+#if CONFIG_CPU_HAS_ARM_MPU || CONFIG_CPU_HAS_NXP_MPU
+    z_arm_clear_arm_mpu_config();
+#endif
+#endif
 
 #ifdef CONFIG_BOOT_INTR_VEC_RELOC
 #if defined(CONFIG_SW_VECTOR_RELAY)
